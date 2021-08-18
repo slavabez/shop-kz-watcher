@@ -1,0 +1,1 @@
+# shop-kz-watcher
