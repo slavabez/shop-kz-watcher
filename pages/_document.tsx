@@ -1,16 +1,15 @@
+/* eslint-disable react/jsx-props-no-spreading */
+// eslint-disable-next-line no-use-before-define
 import React from "react";
-import Document, { Head, Html, Main, NextScript } from "next/document";
 import { ServerStyleSheets } from "@material-ui/core/styles";
-import theme from "../src/theme";
+import Document, { Head, Html, Main, NextScript } from "next/document";
 
 export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
         <Head>
-          {/* PWA primary color */}
-          <title>Sup</title>
-          <meta name="theme-color" content={theme.palette.primary.main} />
+          <title>Фыыы</title>
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
