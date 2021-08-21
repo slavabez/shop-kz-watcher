@@ -1,18 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import cheerio from "cheerio";
 import got from "got";
-
-interface IProductMetaData {
-  price: number;
-  url: string;
-  imageUrl: string;
-  title: string;
-  description: string;
-}
+import prisma from "../../prisma/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "GET") {
-    const { url } = req.query;
+  if (req.method === "POST") {
+    const { url } = req.body;
     try {
       const shopRes = await got({
         url: url.toString(),
@@ -25,14 +18,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const title = $('meta[property="og:title"]').attr("content") || "Not found";
       const description = $('meta[property="og:description"]').attr("content") || "Not found";
       const canonicalUrl = $('link[rel="canonical"]').attr("href") || "Not found";
-      const responseData: IProductMetaData = {
-        url: canonicalUrl,
-        description,
-        title,
-        price,
-        imageUrl,
-      };
-      res.json(responseData);
+
+      const newProduct = await prisma.product.create({
+        data: {
+          url: canonicalUrl,
+          description,
+          title,
+          price,
+          imageUrl,
+        },
+      });
+
+      res.json(newProduct);
     } catch (e) {
       res.status(500).send({ error: "Error" });
     }
