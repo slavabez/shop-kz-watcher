@@ -1,16 +1,14 @@
-import { AppBar, Container, IconButton, Toolbar, Typography } from "@material-ui/core";
+import { Grid, Paper } from "@material-ui/core";
 
 export default function HomePage() {
   return (
-    <Container maxWidth="sm">
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" aria-label="menu">
-            Menu
-          </IconButton>
-        </Toolbar>
-        <Typography variant="h6">Mooo</Typography>
-      </AppBar>
-    </Container>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={4}>
+        <Paper>Form</Paper>
+      </Grid>
+      <Grid item xs={12} md={8}>
+        <Paper>Data</Paper>
+      </Grid>
+    </Grid>
   );
 }

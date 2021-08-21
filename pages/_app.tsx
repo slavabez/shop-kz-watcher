@@ -1,11 +1,25 @@
-// pages/_app.tsx
-/* eslint-disable react/jsx-props-no-spreading */
 import { FC, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { ThemeProvider } from "@material-ui/core/styles";
+import { createStyles, makeStyles, Theme, ThemeProvider } from "@material-ui/core/styles";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import theme from "@styles/theme";
+import { AppBar, IconButton, Paper, Toolbar, Typography } from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    menuButton: {
+      marginRight: theme.spacing(2),
+    },
+    title: {
+      flexGrow: 1,
+    },
+  }),
+);
 
 const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
@@ -16,6 +30,8 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     }
   }, []);
 
+  const classes = useStyles();
+
   return (
     <>
       <Head>
@@ -25,7 +41,22 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Component {...pageProps} />
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="menu"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h5">Мониторинг цен</Typography>
+          </Toolbar>
+        </AppBar>
+        <Paper>
+          <Component {...pageProps} />
+        </Paper>
       </ThemeProvider>
     </>
   );
