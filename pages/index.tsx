@@ -1,11 +1,19 @@
 import { Button, Container, Grid, TextField } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import prisma from "../prisma/prisma";
 import { Product } from "@prisma/client";
 import { useState } from "react";
+import useSWR from "swr";
+import client from "../prisma/client";
+import ProductCard from "../components/home/ProductCard";
 
 interface IMainPageProps {
   products: Product[];
+}
+export async function getStaticProps() {
+  const products = await client.product.findMany();
+  return {
+    props: { products },
+  };
 }
 
 export default function HomePage(props: IMainPageProps) {
@@ -14,6 +22,7 @@ export default function HomePage(props: IMainPageProps) {
     event.preventDefault();
     event.stopPropagation();
   };
+  const { data } = useSWR("/api/products", { initialData: props.products });
 
   return (
     <Grid container>
@@ -32,19 +41,10 @@ export default function HomePage(props: IMainPageProps) {
         </Container>
       </Grid>
       <Grid item xs={12} md={8}>
-        <ul>
-          {props?.products.map((p) => (
-            <li key={p.id}>{p.title}</li>
-          ))}
-        </ul>
+        {data?.map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
       </Grid>
     </Grid>
   );
-}
-
-export async function getStaticProps() {
-  const products = await prisma.product.findMany();
-  return {
-    props: { products },
-  };
 }

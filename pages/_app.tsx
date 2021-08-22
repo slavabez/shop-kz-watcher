@@ -1,4 +1,5 @@
 import { FC, useEffect } from "react";
+import { SWRConfig } from "swr";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createStyles, makeStyles, Theme, ThemeProvider } from "@material-ui/core/styles";
 import { AppProps } from "next/app";
@@ -38,26 +39,33 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         <title>My App</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h5">Мониторинг цен</Typography>
-          </Toolbar>
-        </AppBar>
-        <Paper>
-          <Component {...pageProps} />
-        </Paper>
-      </ThemeProvider>
+      <SWRConfig
+        value={{
+          refreshInterval: 60000,
+          fetcher: (res, init) => fetch(res, init).then((res) => res.json()),
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="menu"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h5">Мониторинг цен</Typography>
+            </Toolbar>
+          </AppBar>
+          <Paper>
+            <Component {...pageProps} />
+          </Paper>
+        </ThemeProvider>
+      </SWRConfig>
     </>
   );
 };

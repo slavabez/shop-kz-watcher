@@ -11,11 +11,13 @@ generator client {
 }
 
 model Product {
-  id  Int @default(autoincrement()) @id
+  id  String @id @default(uuid())
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   title String
-  url String
+  url String @unique
   price Int
   imageUrl String
   description String
+  vendor String
 }
