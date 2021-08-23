@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     // Specify ECMAScript target version
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     // List of library files to be included in the compilation
     "allowJs": true,
     // Allow JavaScript files to be compiled
@@ -46,15 +42,9 @@
     "baseUrl": ".",
     "paths": {
       //alias pathing for absolute paths
-      "@src/*": [
-        "src/*"
-      ],
-      "@pages/*": [
-        "pages/*"
-      ],
-      "@styles/*": [
-        "styles/*"
-      ]
+      "@src/*": ["src/*"],
+      "@pages/*": ["pages/*"],
+      "@styles/*": ["styles/*"]
     },
     "experimentalDecorators": true,
     /* Enables experimental support for ES7 decorators. */
@@ -68,9 +58,6 @@
     "styles/**/*"
     // *** The files TypeScript should type check ***
   ],
-  "exclude": [
-    "node_modules",
-    "coverage"
-  ]
+  "exclude": ["node_modules", "coverage"]
   // *** The files to not type check ***
 }

@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import client from "../../../prisma/client";
 import { got } from "got-scraping";
 import cheerio from "cheerio";
+import { Vendor } from "@src/types";
 
 interface IProductMeta {
   canonicalUrl: string;
@@ -12,15 +13,14 @@ interface IProductMeta {
   vendor: string;
 }
 
-enum Vendor {
-  ShopKz = "shop.kz",
-  Kaspi = "kaspi.kz",
-  Wildberries = "kz.wildberries.ru",
-}
-
 export default async function productsHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const products = await client.product.findMany();
+    const products = await client.product.findMany({
+      take: 10,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     res.send(products);
   } else if (req.method === "POST") {
     const { url } = req.body;
@@ -47,17 +47,17 @@ export default async function productsHandler(req: NextApiRequest, res: NextApiR
         res.status(400).json({ error: `Product with such URL already exists` });
       }
     } else {
-      res.status(401).send({ error: "Invalid URL" });
+      res.status(400).send({ error: "Invalid URL or website not supported" });
     }
   } else {
-    res.status(401).send("Request error, only GET/POST requests are processed");
+    res.status(400).send("Request error, only GET/POST requests are processed");
   }
 }
 
 function validateUrl(url: string): boolean {
   try {
-    new URL(url);
-    return true;
+    const parsed = new URL(url);
+    return [Vendor.ShopKz.toString(), Vendor.Wildberries.toString()].includes(parsed.hostname);
   } catch (e) {
     return false;
   }
@@ -73,6 +73,8 @@ async function processMetadata(url: string): Promise<IProductMeta | null> {
   const response = await got({
     url: url.toString(),
   });
+  // Extract the price, differs by vendor
+  const cssSelector = getCssSelector(url);
   const $ = cheerio.load(response.body);
   // Extract the OpenGraph data, all vendors support this
   const imageUrl = $('meta[property="og:image"]').attr("content") || "Not found";
@@ -81,8 +83,6 @@ async function processMetadata(url: string): Promise<IProductMeta | null> {
   let canonicalUrl = $('link[rel="canonical"]').attr("href") || "Not found";
   const vendor = determineVendor(url);
 
-  // Extract the price, differs by vendor
-  const cssSelector = getCssSelector(url);
   const priceText = $(cssSelector).text();
   const price = Number.parseInt(priceText.replace(/[₸ ()тг.]/g, ""));
 

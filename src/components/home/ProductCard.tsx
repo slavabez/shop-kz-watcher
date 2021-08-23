@@ -5,7 +5,8 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import { Product } from "@prisma/client";
-import { Link } from "@material-ui/core";
+import { Box, Link } from "@material-ui/core";
+import { Vendor } from "@src/types";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -20,6 +21,15 @@ const useStyles = makeStyles(() => ({
   },
   cover: {
     width: 151,
+  },
+  infoPanel: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  price: {
+    fontWeight: "bold",
+    fontSize: "1.25rem",
   },
 }));
 
@@ -36,6 +46,14 @@ const truncate = (input: string, maxLength = 50) => {
   }
 };
 
+const formatPrice = (product) => {
+  const formatter = new Intl.NumberFormat("ru-KZ", {
+    style: "currency",
+    currency: product.vendor === Vendor.Wildberries ? "RUB" : "KZT",
+  });
+  return formatter.format(product.price);
+};
+
 export default function ProductCard(props: IProductCard) {
   const { product } = props;
   const classes = useStyles();
@@ -45,8 +63,12 @@ export default function ProductCard(props: IProductCard) {
       <div className={classes.details}>
         <CardContent className={classes.content}>
           <Typography>{truncate(product.title)}</Typography>
-          <Typography variant="caption">{product.price}</Typography>
-          <Link href={product.url}>{product.vendor}</Link>
+          <Box className={classes.infoPanel}>
+            <Typography className={classes.price} variant="body1">
+              {formatPrice(product)}
+            </Typography>
+            <Link href={product.url}>{product.vendor}</Link>
+          </Box>
         </CardContent>
       </div>
       <CardMedia className={classes.cover} image={product.imageUrl} title={product.title} />

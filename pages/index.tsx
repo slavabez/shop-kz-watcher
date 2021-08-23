@@ -1,17 +1,34 @@
-import { Button, Container, Grid, TextField, Typography } from "@material-ui/core";
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Snackbar,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { Alert, Color } from "@material-ui/lab";
 import AddIcon from "@material-ui/icons/Add";
 import { Product } from "@prisma/client";
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import client from "../prisma/client";
 import ProductCard from "../src/components/home/ProductCard";
 import { makeStyles } from "@material-ui/core/styles";
+import theme from "@styles/theme";
+import { Vendor } from "@src/types";
 
 interface IMainPageProps {
   products: Product[];
 }
 export async function getStaticProps() {
-  const products = await client.product.findMany();
+  const products = await client.product.findMany({
+    take: 10,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
   return {
     props: { products },
   };
@@ -33,39 +50,113 @@ const useStyles = makeStyles({
       margin: "0.5rem",
     },
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
+  },
 });
 
 export default function HomePage(props: IMainPageProps) {
   const [newUrl, setNewUrl] = useState("");
+  const [inputError, setInputError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    isOpen: boolean;
+    message: string;
+    severity: Color;
+  } | null>(null);
+
+  const { data } = useSWR("/api/products", { initialData: props.products });
+
+  const sendUrlRequest = async () => {
+    const response = await fetch("/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: newUrl }),
+    });
+    if (response.status === 400) {
+      setSnackbar({
+        isOpen: true,
+        severity: "error",
+        message: "Ошибка. Этот товар уже есть в списке",
+      });
+    } else if (response.status === 200) {
+      // Add to local data & cache
+      mutate("/api/products");
+      setSnackbar({
+        isOpen: true,
+        message: "Товар успешно добавлен в список",
+        severity: "success",
+      });
+    }
+    setIsLoading(false);
+  };
+
   const handleNewUrl = (event) => {
     event.preventDefault();
     event.stopPropagation();
+    // Validate input to be a legit URL
+    try {
+      new URL(newUrl);
+    } catch (e) {
+      setInputError("Не похоже на ссылку... Ссылка должна начинатся на https://");
+      return;
+    }
+    if (
+      ![Vendor.ShopKz.toString(), Vendor.Wildberries.toString()].includes(new URL(newUrl).hostname)
+    ) {
+      setInputError(
+        "На данный момент поддерживаются только ссылки на товары с сайтов shop.kz и kz.wildberries.ru",
+      );
+      return;
+    }
+
+    setInputError("");
+    setIsLoading(true);
+    sendUrlRequest();
   };
-  const { data } = useSWR("/api/products", { initialData: props.products });
-  const { form, cardContainer } = useStyles();
+
+  const { form, cardContainer, backdrop } = useStyles();
 
   return (
     <Grid container>
       <Grid item xs={12} md={4}>
         <form className={form} onSubmit={handleNewUrl}>
           <TextField
+            id="new-product-input-url"
             label="Ссылка на товар"
             value={newUrl}
+            error={!!inputError}
+            helperText={inputError}
             onChange={(event) => setNewUrl(event.target.value)}
           />
-          <Button variant="contained" color="default" startIcon={<AddIcon />}>
+          <Button type="submit" variant="contained" color="default" startIcon={<AddIcon />}>
             Добавить
           </Button>
         </form>
       </Grid>
       <Grid item xs={12} md={8}>
         <Container className={cardContainer}>
-          <Typography variant="h3">Товары под наблюдением</Typography>
+          <Typography variant="h4">Товары под наблюдением</Typography>
           {data?.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </Container>
       </Grid>
+      <Backdrop open={!!isLoading} className={backdrop}>
+        <CircularProgress color="secondary" />
+      </Backdrop>
+      <Snackbar
+        open={!!snackbar?.isOpen}
+        autoHideDuration={4000}
+        onClose={() => {
+          setSnackbar(null);
+        }}
+      >
+        <Alert severity={snackbar?.severity}>{snackbar?.message}</Alert>
+      </Snackbar>
     </Grid>
   );
 }
