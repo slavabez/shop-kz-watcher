@@ -5,7 +5,7 @@ import { createStyles, makeStyles, Theme, ThemeProvider } from "@material-ui/cor
 import { AppProps } from "next/app";
 import Head from "next/head";
 import theme from "@styles/theme";
-import { AppBar, IconButton, Paper, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, IconButton, Toolbar, Typography } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -61,9 +61,7 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
               <Typography variant="h5">Мониторинг цен</Typography>
             </Toolbar>
           </AppBar>
-          <Paper>
-            <Component {...pageProps} />
-          </Paper>
+          <Component {...pageProps} />
         </ThemeProvider>
       </SWRConfig>
     </>

@@ -45,6 +45,7 @@ export default function ProductCard(props: IProductCard) {
       <div className={classes.details}>
         <CardContent className={classes.content}>
           <Typography>{truncate(product.title)}</Typography>
+          <Typography variant="caption">{product.price}</Typography>
           <Link href={product.url}>{product.vendor}</Link>
         </CardContent>
       </div>
