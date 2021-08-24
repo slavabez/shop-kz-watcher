@@ -9,6 +9,8 @@ module.exports = {
       script: "yarn run update_prices",
       cron_restart: "0 * * * *",
       instances: 1,
+      exec_mode: "fork",
+      autorestart: false,
     },
   ],
 };
