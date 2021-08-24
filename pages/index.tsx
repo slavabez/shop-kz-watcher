@@ -66,7 +66,7 @@ export default function HomePage(props: IMainPageProps) {
     severity: Color;
   } | null>(null);
 
-  const { data } = useSWR("/api/products", { initialData: props.products });
+  const { data } = useSWR("/api.ts/products", { initialData: props.products });
 
   const sendUrlRequest = async () => {
     const response = await fetch("/api/products", {
@@ -84,7 +84,7 @@ export default function HomePage(props: IMainPageProps) {
       });
     } else if (response.status === 200) {
       // Add to local data & cache
-      mutate("/api/products");
+      mutate("/api.ts/products");
       setSnackbar({
         isOpen: true,
         message: "Товар успешно добавлен в список",
