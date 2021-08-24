@@ -10,29 +10,12 @@ import {
 } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import AddIcon from "@material-ui/icons/Add";
-import { Product } from "@prisma/client";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
-import client from "../prisma/client";
 import ProductCard from "../src/components/home/ProductCard";
 import { makeStyles } from "@material-ui/core/styles";
 import theme from "@styles/theme";
 import { Vendor } from "@src/types";
-
-interface IMainPageProps {
-  products: Product[];
-}
-export async function getStaticProps() {
-  const products = await client.product.findMany({
-    take: 10,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return {
-    props: { products },
-  };
-}
 
 const useStyles = makeStyles({
   form: {
@@ -56,7 +39,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function HomePage(props: IMainPageProps) {
+export default function HomePage() {
   const [newUrl, setNewUrl] = useState("");
   const [inputError, setInputError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +49,7 @@ export default function HomePage(props: IMainPageProps) {
     severity: Color;
   } | null>(null);
 
-  const { data } = useSWR("/api.ts/products", { initialData: props.products });
+  const { data } = useSWR("/api/products");
 
   const sendUrlRequest = async () => {
     const response = await fetch("/api/products", {
@@ -84,7 +67,7 @@ export default function HomePage(props: IMainPageProps) {
       });
     } else if (response.status === 200) {
       // Add to local data & cache
-      mutate("/api.ts/products");
+      mutate("/api/products");
       setSnackbar({
         isOpen: true,
         message: "Товар успешно добавлен в список",

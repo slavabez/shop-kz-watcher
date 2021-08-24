@@ -17,6 +17,8 @@ model Product {
   title String
   url String @unique
   price Int
+  lowestPrice Int
+  highestPrice Int
   imageUrl String
   description String
   vendor String
