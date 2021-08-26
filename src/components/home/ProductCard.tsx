@@ -31,6 +31,12 @@ const useStyles = makeStyles(() => ({
     fontWeight: "bold",
     fontSize: "1.25rem",
   },
+  lowest: {
+    fontSize: "0.75rem",
+  },
+  highest: {
+    fontSize: "0.75rem",
+  },
 }));
 
 interface IProductCard {
@@ -46,12 +52,15 @@ const truncate = (input: string, maxLength = 50) => {
   }
 };
 
-const formatPrice = (product) => {
+const formatPrice = (
+  product: Product,
+  type: "price" | "lowestPrice" | "highestPrice" = "price",
+) => {
   const formatter = new Intl.NumberFormat("ru-KZ", {
     style: "currency",
     currency: product.vendor === Vendor.Wildberries ? "RUB" : "KZT",
   });
-  return formatter.format(product.price);
+  return formatter.format(product[type]);
 };
 
 export default function ProductCard(props: IProductCard) {
@@ -67,6 +76,14 @@ export default function ProductCard(props: IProductCard) {
             <Typography className={classes.price} variant="body1">
               {formatPrice(product)}
             </Typography>
+            <Box>
+              <Typography className={classes.lowest} variant="body1">
+                {formatPrice(product, "lowestPrice")}
+              </Typography>
+              <Typography className={classes.highest} variant="body1">
+                {formatPrice(product, "highestPrice")}
+              </Typography>
+            </Box>
             <Link href={product.url}>{product.vendor}</Link>
           </Box>
         </CardContent>
