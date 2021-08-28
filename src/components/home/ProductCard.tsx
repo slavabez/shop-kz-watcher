@@ -5,8 +5,9 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import { Product } from "@prisma/client";
-import { Box, Link } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import { Vendor } from "@src/types";
+import theme from "@styles/theme";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -14,6 +15,7 @@ const useStyles = makeStyles(() => ({
   },
   details: {
     display: "flex",
+    flexGrow: 1,
     flexDirection: "column",
   },
   content: {
@@ -33,9 +35,11 @@ const useStyles = makeStyles(() => ({
   },
   lowest: {
     fontSize: "0.75rem",
+    color: theme.palette.success.main,
   },
   highest: {
     fontSize: "0.75rem",
+    color: theme.palette.error.main,
   },
 }));
 
@@ -78,13 +82,12 @@ export default function ProductCard(props: IProductCard) {
             </Typography>
             <Box>
               <Typography className={classes.lowest} variant="body1">
-                {formatPrice(product, "lowestPrice")}
+                мин: {formatPrice(product, "lowestPrice")}
               </Typography>
               <Typography className={classes.highest} variant="body1">
-                {formatPrice(product, "highestPrice")}
+                макс: {formatPrice(product, "highestPrice")}
               </Typography>
             </Box>
-            <Link href={product.url}>{product.vendor}</Link>
           </Box>
         </CardContent>
       </div>
