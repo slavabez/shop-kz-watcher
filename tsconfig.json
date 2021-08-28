@@ -53,9 +53,9 @@
   },
   "include": [
     "next-env.d.ts",
-    "pages/**/*",
+    "src/pages/**/*",
     "src/**/*",
-    "styles/**/*"
+    "src/styles/**/*"
     // *** The files TypeScript should type check ***
   ],
   "exclude": ["node_modules", "coverage"]

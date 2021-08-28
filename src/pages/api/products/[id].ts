@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import client from "../../../prisma/client";
+import client from "../../../../prisma/client";
 
 export default async function productsHandler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;

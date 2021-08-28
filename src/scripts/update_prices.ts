@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { PrismaClient, Product } from "@prisma/client";
 import { Point, InfluxDB, WriteApi } from "@influxdata/influxdb-client";
 
-import { processMetadata } from "../src/util/scraping";
+import { processMetadata } from "../util/scraping";
 
 config();
 
