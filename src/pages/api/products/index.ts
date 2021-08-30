@@ -1,8 +1,9 @@
+import { withSentry } from "@sentry/nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import client from "../../../../prisma/client";
 import { processMetadata, sanitizeUrl, validateUrl } from "@src/util/scraping";
 
-export default async function productsHandler(req: NextApiRequest, res: NextApiResponse) {
+async function productsHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     const products = await client.product.findMany({
       take: 10,
@@ -44,3 +45,5 @@ export default async function productsHandler(req: NextApiRequest, res: NextApiR
     res.status(400).send("Request error, only GET/POST requests are processed");
   }
 }
+
+export default withSentry(productsHandler);

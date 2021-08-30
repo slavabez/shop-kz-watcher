@@ -5,8 +5,8 @@ export default function Logo(props) {
   return (
     <NextLink href="/">
       <Box {...props}>
-        <Text fontSize="lg" fontWeight="bold">
-          Logo
+        <Text fontSize="xl" fontWeight="bold">
+          watcher.kz
         </Text>
       </Box>
     </NextLink>

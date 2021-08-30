@@ -1,7 +1,8 @@
+import { withSentry } from "@sentry/nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import client from "../../../../prisma/client";
 
-export default async function productsHandler(req: NextApiRequest, res: NextApiResponse) {
+async function productsHandler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
   // Make sure the ID is formatted properly
   if (!id || typeof id !== "string") {
@@ -28,3 +29,5 @@ export default async function productsHandler(req: NextApiRequest, res: NextApiR
       res.status(405).json({ error: "HTTP request not supported" });
   }
 }
+
+export default withSentry(productsHandler);
