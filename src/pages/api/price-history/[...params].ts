@@ -1,3 +1,4 @@
+import { withSentry } from "@sentry/nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { InfluxDB } from "@influxdata/influxdb-client";
 import joi from "joi";
@@ -10,7 +11,7 @@ const influxUrl = process.env.INFLUX_URL;
 const influxClient = new InfluxDB({ url: influxUrl, token: token });
 const queryApi = influxClient.getQueryApi(org);
 
-export default async function priceHistoryHandler(req: NextApiRequest, res: NextApiResponse) {
+async function priceHistoryHandler(req: NextApiRequest, res: NextApiResponse) {
   const { params } = req.query;
   if (!Array.isArray(params)) {
     return;
@@ -45,3 +46,5 @@ export default async function priceHistoryHandler(req: NextApiRequest, res: Next
       res.status(405).json({ error: "HTTP request not supported" });
   }
 }
+
+export default withSentry(priceHistoryHandler);
