@@ -13,7 +13,7 @@ export default function Header() {
       wrap="wrap"
       w="100%"
       mb={8}
-      p={8}
+      p={[2, 4, 4, 4]}
       bg={["blue.700", "blue.700", "blue.700", "blue.700"]}
       color={"white"}
     >
